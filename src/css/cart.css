@@ -1,0 +1,152 @@
+.sub-menu{
+    padding: 5px 0 0 7px;
+    margin-top: 5px;
+  }
+  .menu-wrap {
+    position: fixed;
+    right: 0;
+    z-index: 1001;
+    width: 300px;
+    height: 100%;
+    padding: 40px;
+    background-color: #C1CFC0;
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    transition: all 0.5s cubic-bezier(0.7,0,0.3,1);
+    transform: translate3d(360px,0,0);
+  }
+  .menu-wrap.active {
+    transform: translate3d(0px,0,0);
+  }
+  
+  .menu-wrap .menu .icon-list a {
+    position: relative;
+    font-family: 'Poiret One', cursive;
+    display: block;
+    padding: 10px;
+    text-decoration: none;
+    color: black;
+    font-weight: bold;
+    font-size: 20px;
+    transition: all 0.3s ease;
+  }
+  .menu-wrap .menu .icon-list a::before {
+    position: absolute;
+    content: "";
+    width: 0%;
+    height: 2px;
+    top: 80%;
+    transition: all 0.3s ease;
+  }
+  .menu-wrap .menu .icon-list a:hover {
+    color: #00A19D;
+  }
+  .menu-wrap .menu .icon-list a:hover::before {
+    width: 50%;
+    background-color: #00A19D;
+  }
+  /* Buttons */
+  .menu-button, 
+  .close-button {
+    position: fixed;
+    top: 50px;
+    width: 50px;
+    height: 50px;
+    background-color: #D4ECDD;
+    font-size: 20px;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    box-shadow: 0 0 5px rgba(0,0,0,0.2);
+  }
+  .menu-button {
+    right: 0px;
+    z-index: 102;
+  }
+  .close-button {
+    left: -50px;
+    z-index: 100;
+  }
+  /* Content */
+  .content {
+    text-align: center;
+    color: #282828;
+    padding-top: 80px;
+  }
+  .content h2 {
+    position: relative;
+    text-transform: uppercase;
+    margin-bottom: 30px;
+    font-size: 35px;
+    font-family: 'Poiret One', cursive;
+  }
+  .content h2::after {
+    position: absolute;
+    content: "";
+    width: 100px;
+    height: 2px;
+    background-color: #222;
+    bottom: -15px;
+    left: 50%;
+    margin-left: -50px;
+  }
+  .content p {
+    width: 80%;
+    margin: 10px auto;
+    line-height: 1.85;
+    color: #444;
+    font-family: 'Poiret One', cursive;
+  }
+
+
+.card {
+    border: none;
+    border-radius: 10px;
+    opacity:0.80;
+}
+
+.c-details span {
+    font-weight: 800;
+    font-size: 13px
+}
+
+.icon {
+    width: 50px;
+    height: 50px;
+    background-color: #eee;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 39px
+}
+
+.badge span {
+    background-color: teal;
+    width: 90px;
+    height: 25px;
+    padding-bottom: 3px;
+    border-radius: 5px;
+    display: flex;
+    color: black;
+    justify-content: center;
+    align-items: center;
+    font-size:15px;
+}
+
+.progress {
+    height: 10px;
+    border-radius: 10px
+}
+
+.progress div {
+    background-color: red
+}
+
+.text1 {
+    font-size: 20px;
+    font-weight: 800;
+}
+
+.text2 {
+    color: #a5aec0
+}
