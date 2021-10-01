@@ -9,7 +9,7 @@
 <div class="container">
   <div class="my-debts-info">
     <form method='GET' action="{% url 'splitter:my_debts' %}">
-      <p>Search User: <input type='search' name='q' placeholder='Search'></p>
+      <input type='search' name='q' placeholder='Search'>
     </form>
     <div class="my-debts-income">
       <h1>Payments to receive:</h1>
@@ -74,7 +74,7 @@
         {% endif %}
       </div>
     </div>
-    <a href="{% url 'splitter:final_settlements' %}" class="btn btn-primary final-debts-button">Show Final Debts</a>
+    <a href="{% url 'splitter:final_settlements' %}" class="btn btn-primary final-debts-button" style="margin-left: 1.5% !important; justify-content: center !important; display: flex !important; background-color: #A2CDCD !important; color: black !important;">Show Final Debts</a>
   </div>
   </div>
 

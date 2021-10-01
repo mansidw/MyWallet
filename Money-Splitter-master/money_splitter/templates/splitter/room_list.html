@@ -20,14 +20,14 @@
           {% else %}
           <h1>Your Rooms:</h1>
           {% for room in rooms_list %}
-          <a href="{% url 'splitter:room_detail' pk=room.pk %}">
-            <div class="room_name">
+          <a href="{% url 'splitter:room_detail' pk=room.pk %}" style="text-decoration: none !important;">
+            <div class="room_name" >
               <p>{{ room.name }}</p>
             </div>
           </a>
           {% endfor %}
           {% endif %}
-          <a href="" class="btn btn-primary create-room" data-target="#RoomModalCreateTransaction" data-toggle="modal">Create Room</a>
+          <a href="" class="btn btn-primary create-room" data-target="#RoomModalCreateTransaction" data-toggle="modal" style="margin-left: 1.5% !important; justify-content: center !important; display: flex !important; background-color: #A2CDCD !important; color: black !important;">Create Room</a>
         </div>
       </div>
     </div>

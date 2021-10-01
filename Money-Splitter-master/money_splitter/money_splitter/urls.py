@@ -22,4 +22,5 @@ urlpatterns = [
     path('admin123/', admin.site.urls),
     path('accounts/',include('allauth.urls')),
     path('splitter/',include('splitter.urls')),
+    # path('dashboard/', name="dashboard")
 ]
