@@ -5,10 +5,10 @@ import Typography from '@material-ui/core/Typography';
 import { Link as RouterLink } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
-import { Footer } from '../Basics/Footer'
+// import { Footer } from '../Basics/Footer'
 import { Header } from '../Basics/Header'
 import Button from '@material-ui/core/Button';
-import DispCard from './DispCard';
+// import DispCard from './DispCard';
 import '../../css/landing.css'
 import {useTranslation} from "react-i18next";
 
