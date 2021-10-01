@@ -1,0 +1,11 @@
+{% extends "expenses/base.html" %}
+
+{% load static %}
+
+{% load humanize %}
+
+{% block content %}
+    <label for="formFileDisabled" class="form-label">Disabled file input example</label>
+    <input class="form-control" type="file" id="formFileDisabled" />
+    <a class="btn btn-outline-danger mt-5 float-end me-5" href="#" role="button" data-bs-toggle="modal" data-bs-target="#deleteAllModal">Submit</a>
+{% endblock %}

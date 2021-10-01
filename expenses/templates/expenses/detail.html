@@ -40,14 +40,18 @@
                 </tr>
                 <tr>
                     <th scope="row">Date of Payment</th>
+                    <td>{{ expense.dateOfPayment }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Date added</th>
                     <td>{{ expense.payment_time|date:'F d, Y' }}</td>
                 </tr>
                 <tr>
-                    <th scope="row">Day of Payment</th>
+                    <th scope="row">Day added</th>
                     <td>{{ expense.payment_time|date:'l' }}</td>
                 </tr>
                 <tr>
-                    <th scope="row">Exact Time of Payment</th>
+                    <th scope="row">Exact Time Payment added</th>
                     <td>{{ expense.payment_time|time:'H:i' }}</td>
                 </tr>
             </tbody>

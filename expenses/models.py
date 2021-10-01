@@ -9,7 +9,8 @@ class Expense(models.Model):
     title = models.CharField(max_length=100)
     description = models.CharField(max_length=200)
     amount = models.FloatField()
-    payment_time = models.DateTimeField()
+    payment_time = models.DateTimeField(null=True)
+    dateOfPayment = models.CharField(max_length=100, default="None", null=True)
 
     def __str__(self) -> str:
         return str(self.amount)

@@ -113,11 +113,14 @@ def add_expense(request):
         title = request.POST.get('title')
         desc = request.POST.get('desc')
         price = float(request.POST.get('price'))
+        date = request.POST.get('date')
 
         new_expense = Expense(title=title,
                               description=desc,
                               amount=price,
-                              payment_time=timezone.now())
+                              payment_time=timezone.now(),
+                              dateOfPayment = date
+                              )
 
         new_expense.save()
 
@@ -248,3 +251,9 @@ def delete_expenses_monthly(request, year_num, month_num):
 
         return HttpResponseRedirect(
             reverse('expenses:index', args=(year_num, month_num)))
+
+def image(request):
+    # if request.method == "POST":
+    #     print("FF")
+    print("Prnava")
+    return render(request, 'expenses/image.html')
