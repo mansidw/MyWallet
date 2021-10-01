@@ -25,3 +25,9 @@ class Expense(models.Model):
 
     def __str__(self):
         return str(self.owner)+'s income'
+
+class receipt(models.Model):
+    amount=models.DecimalField(
+        max_digits=10, decimal_places=2, max_length=255)
+
+

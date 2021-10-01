@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'userauth.apps.UserauthConfig',
     'income.apps.IncomeConfig',
     'expenses.apps.ExpensesConfig',
+    'rooms',
     'rest_framework',
     'knox',
 ]
@@ -106,11 +107,11 @@ WSGI_APPLICATION = 'expensetracker.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
-
+import os
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': str(os.path.join(BASE_DIR, "db.sqlite3")),
     }
 }
 
