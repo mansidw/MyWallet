@@ -1,0 +1,21 @@
+{% extends "expenses/base.html" %}
+
+{% load static %}
+
+{% load humanize %}
+
+{% block content %}
+    
+
+
+    <form action="{% url 'expenses:image' %}" method="post" enctype="multipart/form-data">
+    <div class="row mb-3">
+            <div class="col-sm-10">
+                <input class="form-control" id="id_docfile" type="file" name="docfile"/>
+            </div>
+    </div>
+    <button type="submit" class="btn btn-primary float-end me-3">Submit</button></form>
+
+
+
+{% endblock %}

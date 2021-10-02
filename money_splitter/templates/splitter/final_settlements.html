@@ -1,0 +1,69 @@
+{% extends 'splitter/base.html' %}
+{% load static %}
+{% block css %}
+  <link rel="stylesheet" href="{% static 'css/final_settlements.css' %}">
+{% endblock %}
+{% block content %}
+
+<div class="container">
+  <div class="final-debt-info">
+    <div class="final-debt-income">
+      <h1>Renumeration:</h1>
+      <div class="row">
+        {% if noincome %}
+          <h4>Oops! Looks like no remuneration is pending.</h4>
+        {% else %}
+        {% for obj in user_receiver_positive %}
+          <div class="col-lg-3 col-md-4 col-sm-6 col-12">
+            <div class="incomes-debts-info">
+              <h3>Receive from:</h3>
+              <h3>{{ obj.sender.username }}</h3>
+              <h4>Amount: {{ obj.final_amount }}</h4>
+            </div>
+          </div>
+        {% endfor %}
+        {% for obj in user_sender_negative %}
+          <div class="col-lg-3 col-md-4 col-sm-6 col-12">
+            <div class="incomes-debts-info">
+              <h3>Receive from:</h3>
+              <h3>{{ obj.receiver.username }}</h3>
+              <h4>Amount: {{ obj.final_amount }}</h4>
+            </div>
+          </div>
+        {% endfor %}
+        {% endif %}
+      </div>
+    </div>
+    <div class="final-debt-expense">
+      <h1>Debts:</h1>
+      <div class="row">
+        {% if noexpense %}
+        <h4>Hurray! No debts pending.</h4>
+        {% else %}
+        {% for obj in user_sender_positive %}
+        <div class="col-lg-3 col-md-4 col-sm-6 col-12">
+          <div class="expense-debts-info">
+            <h2>Pay to:</h2>
+            <h3>{{ obj.receiver.username }}</h3>
+            <h4>Amount: {{ obj.final_amount }}</h4>
+          </div>
+        </div>
+        {% endfor %}
+        {% for obj in user_receiver_negative %}
+        <div class="col-lg-3 col-md-4 col-sm-6 col-12">
+          <div class="expense-debts-info">
+            <h2>Pay to:</h2>
+            <h3>{{ obj.sender.username }}</h3>
+            <h4>Amount: {{ obj.final_amount }}</h4>
+          </div>
+        </div>
+        {% endfor %}
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+{% endblock %}
