@@ -10,7 +10,7 @@ from django.urls import reverse
 from django.shortcuts import get_list_or_404, get_object_or_404, render
 from .models import Expense
 from django.utils import timezone
-
+from json import dumps
 # Create your views here.
 
 
@@ -202,6 +202,20 @@ def monthly_chart(request, year_num, month_num):
     labels = []
     data = []
 
+    category_dictionary = {}
+
+    # print(list(Expense.objects.values()))
+
+    for expense in Expense.objects.values():
+        category = expense['title']
+
+        if category not in category_dictionary:
+            category_dictionary[category] = expense['amount']
+        else:
+            category_dictionary[category] += expense['amount']
+
+        # print(expense)
+
     expenses_list = Expense.objects.values('payment_time__day')\
         .order_by('payment_time__day')\
         .annotate(total_expenses=Sum('amount'))\
@@ -216,11 +230,17 @@ def monthly_chart(request, year_num, month_num):
         labels.append(expense_date)
         data.append(expense.get('total_expenses'))
 
+    print(list(category_dictionary.keys()))
+    print(category_dictionary)
+
+    category_data = dumps(category_dictionary)
+
     return render(
         request, 'expenses/month_chart.html', {
             'labels': labels,
             'data': data,
-            'req_date': datetime(year=year_num, month=month_num, day=1)
+            'req_date': datetime(year=year_num, month=month_num, day=1),
+            'category_data' : category_data
         })
 
 

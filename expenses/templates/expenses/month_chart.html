@@ -20,11 +20,13 @@
         <hr>
 
             <div class="container chart-container">
-                <canvas id="myChart"></canvas>
+                <canvas id="myChart" style="margin-bottom: 5rem;"></canvas>
+                <canvas id="myPieChart" style="width:100%;max-width:600px"></canvas>
             </div>
 
 
             <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+
 
             {% if labels %}
                 <script>
@@ -50,6 +52,7 @@
 
                     function getDataset() {
                         let dates = [];
+                        let dict = [];
                         
                         {% for d in labels %}
                             {% with dt=d|date:"SHORT_DATE_FORMAT" %}
@@ -57,6 +60,7 @@
                                 dates.push(dtt)
                             {% endwith %}
                         {% endfor %}
+                    
                         return dates
 
                     }
@@ -67,7 +71,6 @@
 
                     let dates = getDataset();
                     const monthDateObj = extractDate();
-
 
                     var chart = new Chart(ctx, { // The type of chart we want to create
                         type: 'line',
@@ -106,6 +109,65 @@
                             }_${
                                 monthDateObj.year
                             }.png`;
+                            console.log('Download button pressed');
+                            // downloadBtn.click();
+                        }
+
+                    }
+                </script>
+
+                <script>
+                    'use strict';
+
+                    var cat_data = JSON.parse("{{category_data|escapejs}}");
+                    console.log(cat_data);
+
+                    var xvalues = [];
+                    var yvalues = [];
+
+                    function getData(){
+                        for (const[key, value] of Object.entries(cat_data)) {
+                            xvalues.push(key);
+                            yvalues.push(value);
+                        }
+                    }
+
+                    getData();
+
+                    var barColors = [
+                            "#b91d47",
+                            "#00aba9",
+                            "#2b5797",
+                            "#e8c3b9",
+                            "#1e7145"
+                        ];
+
+                    new Chart("myPieChart", {
+                            type: "pie",
+                            data: {
+                                labels: xvalues,
+                                datasets: [{
+                                    backgroundColor: barColors,
+                                    data: yvalues
+                                }]
+                            },
+                            options: {
+                                title: {
+                                    display: true,
+                                    text: "Category wise analysis"
+                                }
+                            }
+                        });
+
+                    function downloadChart() {
+                        if (!isChartRendered)
+                            return;
+                        else {
+                            let downloadBtn = document.getElementById('downloadbtn');
+                            downloadBtn.href = chart.toBase64Image();
+                            downloadBtn.download = `Report_${monthDateObj.month
+                                }_${monthDateObj.year
+                                }.png`;
                             console.log('Download button pressed');
                             // downloadBtn.click();
                         }
