@@ -10,8 +10,7 @@
         <span class="badge bg-dark apptitle">📚 Expense Diary</span>
     </h1>
 
-    <h3 class="mt-5">Your Expenses in
-        <span class="text-primary year-month">{{ captured_date|date:'F, Y' }}</span>
+    <h3 class="mt-5">Your Expenses:
     </h3>
 
     <h4>
@@ -39,6 +38,11 @@
             {% endif %}
             {{ progress.tail }}
         </span>
+        <span
+            class="badge month-stats text-dark badge-saved">
+            <!-- bg-{{progress.color}} -->
+                    Your Savings: {{ tot_bud}} 
+        </span>
     </h3>
 
 
@@ -47,8 +51,6 @@
         <a class="btn btn-outline-dark mt-5 me-md-3 greenbg" href="{% url 'expenses:image' %}" role="button" >💸 Upload Bill</a>
         
     {% endif %}
-
-    <a class="btn btn-outline-secondary mt-5 me-md-3 past-expense" href="{% url 'expenses:index' prev.year prev.month %}" role="button">📆 Past Month</a>
 
     {% if not show_add_button %}
         <a class="btn btn-outline-primary mt-5 me-3" href="{% url 'expenses:home' %}" role="button">🏡 Go back to home</a>

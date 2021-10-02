@@ -51,7 +51,8 @@
         {% if user.is_authenticated %}
         <li><a href="{% url 'splitter:my_debts' %}"><p>My Debts</p></a></li>
         <li><a href="{% url 'splitter:room_list' %}"><p>My Rooms</p></a></li>
-        <li><a href="{% url 'expenses:home' %}"><p>Personal Budgets</p></a></li>
+        <li><a href="{% url 'splitter:personal_budget' %}"><p>Personal Budgets</p></a></li>
+        <li><a href="{% url 'expenses:home' %}"><p>My Expenses</p></a></li>
         <li><a href="{% url 'splitter:logout' %}"><p>Logout</p></a></li>
         <li> <a href="#"><p>{{ user.username }}</p></a></li>
         {% else %}
