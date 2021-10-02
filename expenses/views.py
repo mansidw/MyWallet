@@ -110,13 +110,29 @@ def detail(request, expense_id):
 
 
 def add_expense(request):
+    import requests
+
     if request.method == 'POST':
         title = request.POST.get('title')
+        currency = request.POST.get('currency')
         desc = request.POST.get('desc')
         price = float(request.POST.get('price'))
         date = request.POST.get('date')
 
+        if currency == "rupees": pass
+
+        elif currency == "dollar":
+            x = requests.get('https://free.currconv.com/api/v7/convert?q=USD_INR&compact=ultra&apiKey=a3cdec3932699146c5e3')
+
+            price *= int(x.json()['USD_INR'])
+
+        elif currency == "euros":
+            x = requests.get('https://free.currconv.com/api/v7/convert?q=EUR_INR&compact=ultra&apiKey=a3cdec3932699146c5e3')
+
+            price *= int(x.json()['EUR_INR'])
+
         new_expense = Expense(title=title,
+                              currency = currency,
                               description=desc,
                               amount=price,
                               payment_time=timezone.now(),
