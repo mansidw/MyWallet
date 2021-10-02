@@ -11,6 +11,7 @@ from django.shortcuts import get_list_or_404, get_object_or_404, render
 from .models import Expense
 from django.utils import timezone
 from json import dumps
+# import datetime
 # Create your views here.
 
 
@@ -203,6 +204,7 @@ def monthly_chart(request, year_num, month_num):
     data = []
 
     category_dictionary = {}
+    date_dictionary = {}
 
     # print(list(Expense.objects.values()))
 
@@ -215,6 +217,14 @@ def monthly_chart(request, year_num, month_num):
             category_dictionary[category] += expense['amount']
 
         # print(expense)
+
+    for expense in Expense.objects.values():
+        category = expense['dateOfPayment']
+
+        if category not in date_dictionary:
+            date_dictionary[category] = expense['amount']
+        else:
+            date_dictionary[category] += expense['amount']
 
     expenses_list = Expense.objects.values('payment_time__day')\
         .order_by('payment_time__day')\
@@ -230,17 +240,21 @@ def monthly_chart(request, year_num, month_num):
         labels.append(expense_date)
         data.append(expense.get('total_expenses'))
 
-    print(list(category_dictionary.keys()))
-    print(category_dictionary)
+    # print(list(category_dictionary.keys()))
+    # print(category_dictionary)
 
     category_data = dumps(category_dictionary)
+    date_data = dumps(date_dictionary)
 
     return render(
         request, 'expenses/month_chart.html', {
             'labels': labels,
             'data': data,
             'req_date': datetime(year=year_num, month=month_num, day=1),
-            'category_data' : category_data
+            'category_data' : category_data,
+            "date_data":date_data,
+            "heading" : "daily",
+            "head" : "always"
         })
 
 
@@ -277,3 +291,220 @@ def image(request):
     #     print("FF")
     print("Prnava")
     return render(request, 'expenses/image.html')
+
+
+def expense_summary(request):
+
+    import datetime
+
+    if request.method == 'POST':
+        today_date = datetime.date.today()
+        filter_by = request.POST.get('filter', None)
+        if filter_by != None:
+            if filter_by.lower() == 'weekly':
+                date_search =  today_date - timedelta(days=7) 
+                expenses = Expense.objects.filter(dateOfPayment__gte=date_search)
+
+                x = {}
+
+                # y = []
+
+                for expense in expenses:
+                    # x.append(expense.dateOfPayment)
+                    # y.append(expense.amount)
+
+                    if expense.dateOfPayment not in x:
+                        x[expense.dateOfPayment] = expense.amount
+                    else:
+                        x[expense.dateOfPayment] += expense.amount
+
+                weekly_data = dumps(x)
+
+                print(weekly_data)
+
+                return render(
+                    request, 'expenses/month_chart.html', {
+                        'weekly_data' : weekly_data,
+                        'heading': 'weekly',
+                        "head" : "always"
+                    }
+                )
+
+            elif filter_by.lower() == 'daily':
+                date_search =  today_date - timedelta(days=7) 
+                expenses = Expense.objects.filter(dateOfPayment__gte=date_search)
+
+                date_dictionary = {}
+
+                for expense in Expense.objects.values():
+                    category = expense['dateOfPayment']
+
+                    if category not in date_dictionary:
+                        date_dictionary[category] = expense['amount']
+                    else:
+                        date_dictionary[category] += expense['amount']
+
+                date_data = dumps(date_dictionary)
+
+                return render(
+                    request, 'expenses/month_chart.html', {
+                        "date_data": date_data,
+                        'heading': 'daily',
+                        "head" : "always"
+                    }
+                )
+
+            elif filter_by.lower() == 'monthly':
+                date_search =  today_date - timedelta(days=31) 
+                expenses = Expense.objects.filter(dateOfPayment__gte=date_search)
+
+                x = {}
+
+                # y = []
+
+                for expense in expenses:
+                    # x.append(expense.dateOfPayment)
+                    # y.append(expense.amount)
+
+                    if expense.dateOfPayment not in x:
+                        x[expense.dateOfPayment] = expense.amount
+                    else:
+                        x[expense.dateOfPayment] += expense.amount
+
+                monthly_data = dumps(x)
+                print(monthly_data)
+
+                return render(
+                    request, 'expenses/month_chart.html', {
+                        'monthly_data' : monthly_data,
+                        'heading': 'monthly',
+                        "head" : "always"
+                    }
+                )
+
+            elif filter_by.lower() == 'yearly':
+                date_search =  today_date - timedelta(days=365) 
+                expenses = Expense.objects.filter(dateOfPayment__gte=date_search)
+
+                x = {}
+
+                # y = []
+
+                for expense in expenses:
+                    # x.append(expense.dateOfPayment)
+                    # y.append(expense.amount)
+
+                    if expense.dateOfPayment not in x:
+                        x[expense.dateOfPayment] = expense.amount
+                    else:
+                        x[expense.dateOfPayment] += expense.amount
+
+                yearly_data = dumps(x)
+
+                # print(weekly_data)
+
+                return render(
+                    request, 'expenses/month_chart.html', {
+                        'yearly_data' : yearly_data,
+                        'heading': 'yearly',
+                        "head" : "always"
+                    }
+                )
+
+            elif filter_by.lower() == 'quaterly':
+                date_search =  today_date - timedelta(days=90) 
+                expenses = Expense.objects.filter(dateOfPayment__gte=date_search)
+
+                x = {}
+
+                # y = []
+
+                for expense in expenses:
+                    # x.append(expense.dateOfPayment)
+                    # y.append(expense.amount)
+
+                    if expense.dateOfPayment not in x:
+                        x[expense.dateOfPayment] = expense.amount
+                    else:
+                        x[expense.dateOfPayment] += expense.amount
+
+                quaterly_data = dumps(x)
+
+                # print(weekly_data)
+
+                return render(
+                    request, 'expenses/month_chart.html', {
+                        'quaterly_data' : quaterly_data,
+                        'heading': 'quaterly',
+                        "head" : "always"
+                    }
+                )
+            
+            elif filter_by.lower() == 'by_category':
+               
+                category_dictionary = {}
+
+                for expense in Expense.objects.values():
+                    category = expense['title']
+
+                    if category not in category_dictionary:
+                        category_dictionary[category] = expense['amount']
+                    else:
+                        category_dictionary[category] += expense['amount']
+
+
+                category_data = dumps(category_dictionary)
+                # print(weekly_data)
+
+                return render(
+                    request, 'expenses/month_chart.html', {
+                        'category_data' : category_data,
+                        'heading': 'by_category',
+                        "head" : "always"
+                    }
+                )
+
+    #     elif filter_by.lower() == 'month':
+    #         expenses = Expense.objects.filter(user=request.user,date__year=today_date.year,date__month=today_date.month)
+    #         title = 'Expenses per category in this month'
+
+    #     elif filter_by.lower() == 'year':
+    #         expenses = Expense.objects.filter(user=request.user,date__year=today_date.year)
+    #         title = 'Expenses per category in this year'
+
+    #     elif filter_by.lower() == 'today':
+    #         expenses = Expense.objects.filter(user=request.user,date__exact=today_date)
+    #         title = 'Expenses per category spent today'
+
+    #     else:
+    #         six_months_ago = today_date - datetime.timedelta(days = 30*6)
+    #         expenses = Expense.objects.filter(user = request.user,date__gte=six_months_ago)
+    #         title = 'Expenses per category in last six months'
+
+    # else:
+    #     six_months_ago = today_date - datetime.timedelta(days = 30*6)
+    #     expenses = Expense.objects.filter(user = request.user,date__gte=six_months_ago)
+    #     title = 'Expenses per category in last six months'
+
+    # final_rep = {}
+
+    # def get_category(expense):
+    #     return expense.category.name
+    # category_list = list(set(map(get_category,expenses)))
+
+    # def get_expense_category_amount(category):
+    #     amount = 0
+    #     category = ExpenseCategory.objects.get(user=request.user,name=category)
+    #     filtered_by_category = expenses.filter(category=category.id)
+    #     for i in filtered_by_category:
+    #         amount += i.amount
+    #     return amount
+
+    # for x in expenses:
+    #     for y in category_list :
+    #         final_rep[y] = get_expense_category_amount(y)
+
+    # weekly_data = dumps
+
+    return render(
+        request, 'expenses/month_chart.html')

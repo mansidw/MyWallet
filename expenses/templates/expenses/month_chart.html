@@ -11,92 +11,151 @@
 
     <div class="container mt-5" style="max-width: 60%;">
 
-        <h3>Here are the details of
-            <span class="chart-heading">{{ req_date|date:'F, Y' }}</span>
-        </h3>
+        <h3>Here is the analysis of your Expense</h3>
 
         <a class="btn btn-outline-primary mt-3 mb-3" href="{% url 'expenses:home' %}" role="button">🏡 Go back to home</a>
         <a onclick="downloadChart()" class="btn btn-outline-dark mt-3 mb-3 float-end" id="downloadbtn" href="#" role="button">Download as png</a>
         <hr>
 
             <div class="container chart-container">
+                <form action="{% url 'expenses:expense_summary' %}" method="post">
+                    {% csrf_token %}
+                    <select name="filter" id="filter" maxlength="50" style="margin-bottom: 5rem;" required>
+                        <option value="" selected disabled hidden>Choose here</option>
+                        <option value="by_category">By Category</option>
+                        <option value="daily">Daily</option>
+                        <option value="monthly">Monthly</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="yearly">Yearly</option>
+                        <option value="quaterly">Quaterly</option>
+                    </select>
+                
+                    <button type="submit" class="btn btn-primary float-end me-3">Submit</button>
+                </form>
+                
                 <canvas id="myChart" style="margin-bottom: 5rem;"></canvas>
-                <canvas id="myPieChart" style="width:100%;max-width:600px"></canvas>
+                <canvas id="myPieChart" style="width:100%;max-width:600px;margin-bottom: 5rem;"></canvas>
             </div>
 
 
             <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+            <script>
+                'use strict';
 
+                var cat_data = JSON.parse("{{category_data|escapejs}}");
+                console.log(cat_data);
+                // alert("Pie chart");
 
-            {% if labels %}
-                <script>
+                var xvalues = [];
+                var yvalues = [];
 
-                    function extractDate() {
-                        let monthName = "";
-                        let year = "";
+                function getData() {
+                    for (const [key, value] of Object.entries(cat_data)) {
+                        xvalues.push(key);
+                        yvalues.push(value);
+                    }
+                }
 
-                        {% with cap_dt=req_date|date:"F Y" %}
-                            var capd = "{{ cap_dt }}";
-                            capd = capd.split(" ")
-                            monthName = capd[0];
-                            year = capd[1];
-                        {% endwith %}
+                getData();
 
-                        dateObj = {
-                            month: monthName,
-                            year: year
+                var barColors = [
+                    "#b91d47",
+                    "#00aba9",
+                    "#2b5797",
+                    "#e8c3b9",
+                    "#1e7145"
+                ];
+
+                new Chart("myPieChart", {
+                    type: "pie",
+                    data: {
+                        labels: xvalues,
+                        datasets: [{
+                            backgroundColor: barColors,
+                            data: yvalues
+                        }]
+                    },
+                    options: {
+                        title: {
+                            display: true,
+                            text: "Category wise analysis"
                         }
+                    }
+                });
 
-                        return dateObj
+                function downloadChart() {
+                    if (!isChartRendered)
+                        return;
+                    else {
+                        let downloadBtn = document.getElementById('downloadbtn');
+                        downloadBtn.href = chart.toBase64Image();
+                        downloadBtn.download = `Report.png`;
+                        console.log('Download button pressed');
+                        downloadBtn.click();
                     }
 
-                    function getDataset() {
-                        let dates = [];
-                        let dict = [];
-                        
-                        {% for d in labels %}
-                            {% with dt=d|date:"SHORT_DATE_FORMAT" %}
-                                var dtt = "{{ dt }}";
-                                dates.push(dtt)
-                            {% endwith %}
-                        {% endfor %}
-                    
-                        return dates
+                }
+            </script>
 
-                    }
-
-                    var ctx = document.getElementById('myChart').getContext('2d');
+            {% if heading == "daily" %}
+                <script>
 
                     let isChartRendered = false;
 
-                    let dates = getDataset();
-                    const monthDateObj = extractDate();
+                    'use strict';
 
-                    var chart = new Chart(ctx, { // The type of chart we want to create
-                        type: 'line',
+                    var date_data = JSON.parse("{{date_data|escapejs}}");
+                    console.log(date_data);
+                    var xValues = [];
+                    var yValues = [];
 
-                        // The data for our dataset
-                        data: {
-                            labels: dates,
-                            datasets: [
-                                {
-                                    label: 'Total spent',
-                                    backgroundColor: 'rgb(0, 0, 0,0.0)',
-                                    borderColor: '#4BC0C0',
-                                    data: {{ data|safe }}
-                                }
-                            ]
-                        },
-
-                        // Configuration options go here
-                        options: {
-                            responsive: true,
-                            animation: {
-                                onComplete: () => (isChartRendered = true)
-                            }
+                    function getData() {
+                        for (const [key, value] of Object.entries(date_data)) {
+                            xValues.push(key);
+                            yValues.push(value);
                         }
+                    }
+                    console.log(xValues);
+                    console.log(yValues);
 
-                    });
+                    getData();
+
+                    var chart = new Chart("myChart", {
+                            type: "line",
+                            data: {
+                                labels: xValues,
+                                datasets: [{
+                                    fill: false,
+                                    lineTension: 0,
+                                    backgroundColor: "rgba(0,0,255,1.0)",
+                                    borderColor: "rgba(0,0,255,0.1)",
+                                    data: yValues
+                                }]
+                            },
+                            options: {
+                                legend: { display: false },
+                                // scales: {
+                                //     yAxes: [{ ticks: { min: 100, max: 2000 } }],
+                                // },
+                                animation: {
+                                    onComplete: () => (isChartRendered = true)
+                                },
+                                scales: {
+                                    yAxes: [{
+                                        scaleLabel: {
+                                            display: true,
+                                            labelString: 'Amounts paid'
+                                        }
+                                    }],
+                                    xAxes: [{
+                                        scaleLabel: {
+                                            display: true,
+                                            labelString: 'Date'
+                                        }
+                                    }]
+                                }
+                            }
+                        });
 
                     function downloadChart() {
                         if (! isChartRendered) 
@@ -104,29 +163,331 @@
                          else {
                             let downloadBtn = document.getElementById('downloadbtn');
                             downloadBtn.href = chart.toBase64Image();
-                            downloadBtn.download = `Report_${
-                                monthDateObj.month
-                            }_${
-                                monthDateObj.year
-                            }.png`;
+                            downloadBtn.download = `Report.png`;
                             console.log('Download button pressed');
-                            // downloadBtn.click();
+                            downloadBtn.click();
                         }
 
                     }
                 </script>
 
+            {% elif heading == "weekly" %}
                 <script>
+                    let isChartRendered = false;
+
                     'use strict';
+
+                    var weekly_data= JSON.parse("{{weekly_data|escapejs}}");
+                    // var yValues = "{{weekly_y|escapejs}}";
+                    console.log("weekdata", weekly_data);
+
+                    var xValuesWeek = [];
+                    var yValuesWeek = [];
+
+                    function getData() {
+                        for (const [key, value] of Object.entries(weekly_data)) {
+                            xValuesWeek.push(key);
+                            yValuesWeek.push(value);
+                        }
+                    }
+
+                    getData();
+
+                    console.log("week", xValuesWeek);
+                    console.log(yValuesWeek);
+
+                    var chart = new Chart("myChart", {
+                        type: "line",
+                        data: {
+                            labels: xValuesWeek,
+                            datasets: [{
+                                fill: false,
+                                lineTension: 0,
+                                backgroundColor: "rgba(0,0,255,1.0)",
+                                borderColor: "rgba(0,0,255,0.1)",
+                                data: yValuesWeek
+                            }]
+                        },
+                        options: {
+                            legend: { display: false },
+                            // scales: {
+                            //     yAxes: [{ ticks: { min: 100, max: 2000 } }],
+                            // },
+                            animation: {
+                                onComplete: () => (isChartRendered = true)
+                            },
+                            scales: {
+                                yAxes: [{
+                                    scaleLabel: {
+                                        display: true,
+                                        labelString: 'Amounts paid'
+                                    }
+                                }],
+                                xAxes: [{
+                                    scaleLabel: {
+                                        display: true,
+                                        labelString: 'Date'
+                                    }
+                                }]
+                            }
+                        }
+                    });
+
+                    function downloadChart() {
+                        if (!isChartRendered)
+                            return;
+                        else {
+                            let downloadBtn = document.getElementById('downloadbtn');
+                            downloadBtn.href = chart.toBase64Image();
+                            downloadBtn.download = `Report.png`;
+                            console.log('Download button pressed');
+                            downloadBtn.click();
+                        }
+
+                    }
+                </script>
+
+            {% elif heading == "monthly" %}
+            <script>
+                let isChartRendered = false;
+
+                'use strict';
+
+                var monthly_data = JSON.parse("{{monthly_data|escapejs}}");
+                // var yValues = "{{weekly_y|escapejs}}";
+                // console.log("weekdata", weekly_data);
+
+                var xValuesWeek = [];
+                var yValuesWeek = [];
+
+                function getData() {
+                    for (const [key, value] of Object.entries(monthly_data)) {
+                        xValuesWeek.push(key);
+                        yValuesWeek.push(value);
+                    }
+                }
+
+                getData();
+
+                // console.log("week", xValuesWeek);
+                // console.log(yValuesWeek);
+
+                var chart = new Chart("myChart", {
+                    type: "line",
+                    data: {
+                        labels: xValuesWeek,
+                        datasets: [{
+                            fill: false,
+                            lineTension: 0,
+                            backgroundColor: "rgba(0,0,255,1.0)",
+                            borderColor: "rgba(0,0,255,0.1)",
+                            data: yValuesWeek
+                        }]
+                    },
+                    options: {
+                        legend: { display: false },
+                        // scales: {
+                        //     yAxes: [{ ticks: { min: 100, max: 2000 } }],
+                        // },
+                        animation: {
+                            onComplete: () => (isChartRendered = true)
+                        },
+                        scales: {
+                            yAxes: [{
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Amounts paid'
+                                }
+                            }],
+                            xAxes: [{
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Date'
+                                }
+                            }]
+                        }
+                    }
+                });
+
+                function downloadChart() {
+                    if (!isChartRendered)
+                        return;
+                    else {
+                        let downloadBtn = document.getElementById('downloadbtn');
+                        downloadBtn.href = chart.toBase64Image();
+                        downloadBtn.download = `Report.png`;
+                        console.log('Download button pressed');
+                        downloadBtn.click();
+                    }
+
+                }
+            </script>
+
+            {% elif heading == "yearly" %}
+            <script>
+                let isChartRendered = false;
+
+                'use strict';
+
+                var yearly_data = JSON.parse("{{yearly_data|escapejs}}");
+                // var yValues = "{{weekly_y|escapejs}}";
+                // console.log("weekdata", weekly_data);
+
+                var xValuesWeek = [];
+                var yValuesWeek = [];
+
+                function getData() {
+                    for (const [key, value] of Object.entries(yearly_data)) {
+                        xValuesWeek.push(key);
+                        yValuesWeek.push(value);
+                    }
+                }
+
+                getData();
+
+                // console.log("week", xValuesWeek);
+                // console.log(yValuesWeek);
+
+                var chart = new Chart("myChart", {
+                    type: "line",
+                    data: {
+                        labels: xValuesWeek,
+                        datasets: [{
+                            fill: false,
+                            lineTension: 0,
+                            backgroundColor: "rgba(0,0,255,1.0)",
+                            borderColor: "rgba(0,0,255,0.1)",
+                            data: yValuesWeek
+                        }]
+                    },
+                    options: {
+                        legend: { display: false },
+                        // scales: {
+                        //     yAxes: [{ ticks: { min: 100, max: 2000 } }],
+                        // },
+                        animation: {
+                            onComplete: () => (isChartRendered = true)
+                        },
+                        scales: {
+                            yAxes: [{
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Amounts paid'
+                                }
+                            }],
+                            xAxes: [{
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Date'
+                                }
+                            }]
+                        }
+                    }
+                });
+
+                function downloadChart() {
+                    if (!isChartRendered)
+                        return;
+                    else {
+                        let downloadBtn = document.getElementById('downloadbtn');
+                        downloadBtn.href = chart.toBase64Image();
+                        downloadBtn.download = `Report.png`;
+                        console.log('Download button pressed');
+                        downloadBtn.click();
+                    }
+
+                }
+            </script>
+            
+            {% elif heading == "quaterly" %}
+            <script>
+                let isChartRendered = false;
+
+                'use strict';
+
+                var quaterly_data = JSON.parse("{{quaterly_data|escapejs}}");
+                // var yValues = "{{weekly_y|escapejs}}";
+                // console.log("weekdata", weekly_data);
+
+                var xValuesWeek = [];
+                var yValuesWeek = [];
+
+                function getData() {
+                    for (const [key, value] of Object.entries(quaterly_data)) {
+                        xValuesWeek.push(key);
+                        yValuesWeek.push(value);
+                    }
+                }
+
+                getData();
+
+                // console.log("week", xValuesWeek);
+                // console.log(yValuesWeek);
+
+                var chart = new Chart("myChart", {
+                    type: "line",
+                    data: {
+                        labels: xValuesWeek,
+                        datasets: [{
+                            fill: false,
+                            lineTension: 0,
+                            backgroundColor: "rgba(0,0,255,1.0)",
+                            borderColor: "rgba(0,0,255,0.1)",
+                            data: yValuesWeek
+                        }]
+                    },
+                    options: {
+                        legend: { display: false },
+                        // scales: {
+                        //     yAxes: [{ ticks: { min: 100, max: 2000 } }],
+                        // },
+                        animation: {
+                            onComplete: () => (isChartRendered = true)
+                        },
+                        scales: {
+                            yAxes: [{
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Amounts paid'
+                                }
+                            }],
+                            xAxes: [{
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Date'
+                                }
+                            }]
+                        }
+                    }
+                });
+
+                function downloadChart() {
+                    if (!isChartRendered)
+                        return;
+                    else {
+                        let downloadBtn = document.getElementById('downloadbtn');
+                        downloadBtn.href = chart.toBase64Image();
+                        downloadBtn.download = `Report.png`;
+                        console.log('Download button pressed');
+                        downloadBtn.click();
+                    }
+
+                }
+            </script>
+
+            {% elif heading == "by_category" %}
+            <script>
+                'use strict';
 
                     var cat_data = JSON.parse("{{category_data|escapejs}}");
                     console.log(cat_data);
+                    // alert("Pie chart");
 
                     var xvalues = [];
                     var yvalues = [];
 
-                    function getData(){
-                        for (const[key, value] of Object.entries(cat_data)) {
+                    function getData() {
+                        for (const [key, value] of Object.entries(cat_data)) {
                             xvalues.push(key);
                             yvalues.push(value);
                         }
@@ -135,29 +496,29 @@
                     getData();
 
                     var barColors = [
-                            "#b91d47",
-                            "#00aba9",
-                            "#2b5797",
-                            "#e8c3b9",
-                            "#1e7145"
-                        ];
+                        "#b91d47",
+                        "#00aba9",
+                        "#2b5797",
+                        "#e8c3b9",
+                        "#1e7145"
+                    ];
 
                     new Chart("myPieChart", {
-                            type: "pie",
-                            data: {
-                                labels: xvalues,
-                                datasets: [{
-                                    backgroundColor: barColors,
-                                    data: yvalues
-                                }]
-                            },
-                            options: {
-                                title: {
-                                    display: true,
-                                    text: "Category wise analysis"
-                                }
+                        type: "pie",
+                        data: {
+                            labels: xvalues,
+                            datasets: [{
+                                backgroundColor: barColors,
+                                data: yvalues
+                            }]
+                        },
+                        options: {
+                            title: {
+                                display: true,
+                                text: "Category wise analysis"
                             }
-                        });
+                        }
+                    });
 
                     function downloadChart() {
                         if (!isChartRendered)
@@ -165,19 +526,15 @@
                         else {
                             let downloadBtn = document.getElementById('downloadbtn');
                             downloadBtn.href = chart.toBase64Image();
-                            downloadBtn.download = `Report_${monthDateObj.month
-                                }_${monthDateObj.year
-                                }.png`;
+                            downloadBtn.download = `Report.png`;
                             console.log('Download button pressed');
-                            // downloadBtn.click();
+                            downloadBtn.click();
                         }
 
                     }
-                </script>
+            </script>
 
-            {% else %}
-                <h1 class="shrugged text-center">¯\_(ツ)_/¯</h1>
-                <h5 class="mt-4 text-center shrugged-caption">You didn't spend a single penny this month</h5>
+
             {% endif %}
 
         </div>

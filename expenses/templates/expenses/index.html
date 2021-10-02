@@ -48,8 +48,6 @@
         
     {% endif %}
 
-    <a class="btn btn-outline-secondary mt-5 me-md-3 past-expense" href="{% url 'expenses:index' prev.year prev.month %}" role="button">📆 Past Month</a>
-
     {% if not show_add_button %}
         <a class="btn btn-outline-primary mt-5 me-3" href="{% url 'expenses:home' %}" role="button">🏡 Go back to home</a>
     {% endif %}
